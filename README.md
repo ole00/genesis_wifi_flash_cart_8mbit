@@ -49,7 +49,7 @@ power cycled. Once that is done the new game starts.
   
 **How it works electrically:**
 
-There are 2 flash chips that hold the data of the Genesig game. One chip keeps the odd bytes, the other one keeps 
+There are 2 flash chips that hold the data of the Genesis game. One chip keeps the odd bytes, the other one keeps 
 the even bytes. Both of the chips are connected to the address and data bus of the console. These chips use 5 Volt 
 logic and require 5V supply which the console provides. The WiFi board and its MCU (micro controller) is also connected
 to the address and data bus of the console, but not directly. There are bunch of so called transceivers that provide a 'bridge' between
@@ -61,7 +61,7 @@ the console bus and the WiFi MCU. The role of the transceivers is:
   
 When the user starts the flash IC programming the main CPU of the console is held in reset, which (in most of the cases) is enough
 to detach the console from the buses. The WiFi MCU can then reprogram the flash chips. In some cases there are some background HW tasks that access the bus even when the main CPU is held in reset. That causes collisions on the bus and the cart programming over WiFi fails. When that happens the user is notified about it and is requested to press the Reset button on the console. After the Reset button is pressed the flash IC programming can be re-tried. When the flash IC programming is done the main CPU of the console is released from the
-reset, the WiFi MCU gets detached from the buses (turns off the transceivers) and the console can start the new game. Most of the games require power cycle to play the game correctly right after programming.
+reset, the WiFi MCU gets detached from the buses (turns off the transceivers) and the console can start the new game. Most of the games require power cycle to play them correctly right after programming.
 
 
 **FAQ:**
