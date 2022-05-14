@@ -1,0 +1,48 @@
+Name     md_intr ;
+PartNo   00 ;
+Date     23/04/2022 ;
+Revision 01 ;
+Designer Engineer;
+Company   ;
+Assembly None ;
+Location  ;
+Device   G16V8 ;
+
+/* INPUTS */
+PIN 1 = A19;
+PIN 2 = A18;
+PIN 3 = A17;
+PIN 4 = A16;
+
+PIN 5 = WE;
+PIN 7 = OE;
+PIN 11 = CE;
+
+/* OUTPUT */
+PIN 13 = QW;
+PIN 14 = QR;
+PIN 15 = QRW;
+
+
+/* LOGIC */
+/* QW is high if:                 */
+/*   CE is H                     */
+/*   or WE is H                  */
+/*   or any of the Address pins is low */
+
+QW = CE # WE # !A19 # !A18 # !A17 # !A16;
+
+/* QR is high if:                 */
+/*   CE is H                     */
+/*   or OE is H                  */
+/*   or any of the Address pins is low */
+
+QR = CE # OE # !A19 # !A18 # !A17 # !A16;
+
+
+/* QRW is high if:                 */
+/*   CE is H                     */
+/*   or (OE and WE) is H                  */
+/*   or any of the Address pins is low */
+QRW = CE # (OE & WE) # !A19 # !A18 # !A17 # !A16;
+
