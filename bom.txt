@@ -1,0 +1,23 @@
+BOM Genesis WiF Cart R3
+--------------------------
+Designators          ,Part name/value       ,Amount,Price, Description
+R1 R2 R3 R4 R10      ,10k                   ,5     , 0.013  ,SMT Resistor 0805 1%
+R5 R6 R7 R8 R9       ,2k2                   ,5     , 0.013  ,SMT Resistor 0805 1%
+C1                   ,1u                    ,1     , 0.038  ,SMT Capacitor 0805 10% ceramic, 6.3V or more (0805ZC105JAT2A)
+C2                   ,10u                   ,1     , 0.314  ,SMT Capacitor 1206 20% tantalum, 10V or more (F931A106KAA)
+C3 C4 C5 C6 C7 C8 C9 ,0.1u                  ,7     , 0.009  ,SMT Capacitor 0805 10% ceramic, 25V or more (08055C104K4T2A)
+U1 U2                ,SST39SF040-70-4C-NHE  ,2     , 1.715  ,NOR Flash 4M (512Kx8) 70ns 5.0V PLCC-32 - alternatives SST39SF040-70-4I-NHE ; SST39SF040-55-4I-NHE-T
+U3 U4                ,74HCT373D-653         ,2     , 0.503  ,OCTAL 3-STATE LATCH Non inverting 5V SOIC-20 Wide - alternatives SN74HCT373DW ; MC74HCT373ADWG
+U6 U7                ,74LVC4245AD           ,2     , 1.13   ,Bus Transceiver Tri-St. Octal Bus 3.3V-5V SO-24 - alternatives SN74LVC4245ADW check Aliexpress!
+U5                   ,74HC595D              ,1     , 0.50   ,Nexperia 8-Bit Shift Register Max 6V SOIC-16 Narrow - alternatives 74HC595-Q100, ! Vih Typ less than  3V  at VCC 5V !!
+U9                   ,74HC08D               ,1     , 0.56   ,Nexperia Quad AND Gate ! Vih Typ less than  3V  at VCC 5V !!
+U8                   ,NCP163ASN330T1G       ,1     , 0.27   ,LDO 3.3V 250mA SOT-23 - alternatives MIC5317-3.3YM5-TR or NCP511SN33T1G or any compatible SOT23-5 LDO 3.3V at least 100mA 
+M1                   ,Lolin-S2-mini         ,1     , 5.40   ,Mini WiFi board based on ESP32-S2FN4R2. https://www.wemos.cc/en/latest/s2/s2_mini.html - check Aliexpress (search: lolin s2 mini)!
+
+
+Total price of components approx. 14£  as of 2022/05
+
+
+
+
+
