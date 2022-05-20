@@ -27,7 +27,7 @@ either generic EEPROM programmer (like TL866ii Plus or similar that can program 
 or you could build Afterburner GAL chip programmer with Arduino UNO on a bread board. If that seems
 complicated you can add the GAL IC to the cart later, whenever it is convenient for you.
 
-**Costs**: Low, around 25-40$, most of the costs are actually shipment costs of the PCBs and components.
+**Costs**: Low, around 40-60$, most of the costs are actually shipment costs of the PCBs and components.
 To reduce costs team up with your friends to produce few of the carts and split the costs.
 
 **Basic operation:**
