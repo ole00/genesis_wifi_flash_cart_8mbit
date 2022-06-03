@@ -3,7 +3,7 @@ Genesis / Megadrive 8 MBit (1MByte) flash cart re-writeable over WiFi
 
 # ! WORK IN PROGRESS !
 
-![prototype](https://github.com/ole00/genesis_wifi_flash_cart_8mbit/raw/master/img/prototype_r1.jpg "prototype cart")
+![prototype](https://github.com/ole00/genesis_wifi_flash_cart_8mbit/raw/master/img/cart_r3.jpg "prototype cart")
 
 Here is yet another Genesis / Megadrive flash cart, this time around it is possible
 to upload the game/program on the fly over WiFi while the cart is plugged in the console.
@@ -13,19 +13,21 @@ will be available here once the project evolves from the WIP stage. Some sources
 
 **Build difficulty**: Medium
 
-The cart uses an existing WiFi development board (Wemos Lolin S2-mini) which simplifies
-the construction of the wireless part of the cart. Then the rest of the components are SMT 
-parts with SOP pin pitch (1.25mm). Such project should be buildable by a home enthusiasts with medium skills
+The cart uses an existing WiFi development board ([Wemos Lolin S2-mini](https://www.wemos.cc/en/latest/s2/s2_mini.html))
+which simplifies the construction of the wireless part of the cart. Then the rest of the components
+are SMT parts with SOP pin pitch (1.25mm), with the exception of the LDO which has 1mm pitch.
+Such project should be possible to build at home by enthusiasts with medium skills
 and a decent soldering iron (TS100 or similar with heat regulation).
-Note that the prototype as seen on the image uses some TSOP ICs, but in the final design
-these are replaced by SOP packages. The cart also contains an optional GAL IC which adds some
+
+The cart also contains an optional GAL IC which adds some
 extra features. If the GAL IC is not populated, the cart should still work, but with basic features only.
 The WiFi board needs to be programmed, but it should be straightforward as the board does not require
 extra programmer, it can be reprogrammed over USB (see the USB-C connector on the right side of the 
-WiFi board). The GAL chip also needs to be programmed - that has to be done only once and requires
+WiFi board) from Arduino IDE. The GAL chip also needs to be programmed - that has to be done only once and requires
 either generic EEPROM programmer (like TL866ii Plus or similar that can program GAL16V8 or ATF16V8B ICs)
-or you could build Afterburner GAL chip programmer with Arduino UNO on a bread board. If that seems
-complicated you can add the GAL IC to the cart later, whenever it is convenient for you.
+or you could build [Afterburner GAL chip programmer](https://github.com/ole00/afterburner) with Arduino UNO
+on a bread board. If that seems complicated you can add the GAL IC to the cart later, whenever
+it is convenient for you.
 
 **Costs**: Low, around 40-60$, most of the costs are actually shipment costs of the PCBs and components.
 To reduce costs team up with your friends to produce few of the carts and split the costs.
@@ -60,8 +62,12 @@ the console bus and the WiFi MCU. The role of the transceivers is:
   the data with relaxed timing (set data sooner, read data later) in a way that suits the WiFi MCU.
   
 When the user starts the flash IC programming the main CPU of the console is held in reset, which (in most of the cases) is enough
-to detach the console from the buses. The WiFi MCU can then reprogram the flash chips. In some cases there are some background HW tasks that access the bus even when the main CPU is held in reset. That causes collisions on the bus and the cart programming over WiFi fails. When that happens the user is notified about it and is requested to press the Reset button on the console. After the Reset button is pressed the flash IC programming can be re-tried. When the flash IC programming is done the main CPU of the console is released from the
-reset, the WiFi MCU gets detached from the buses (turns off the transceivers) and the console can start the new game. Most of the games require power cycle to play them correctly right after programming.
+to detach the console from the buses. The WiFi MCU can then reprogram the flash chips. In some cases there are some background
+HW tasks that access the bus even when the console's main CPU is held in reset. That causes collisions on the bus and the cart programming
+over WiFi fails. When that happens the user is notified about it and is requested to press the Reset button on the console.
+After the Reset button is pressed the flash IC programming can be re-tried. When the flash IC programming is done the main
+CPU of the console is released from the reset, the WiFi MCU gets detached from the buses (turns off the transceivers)
+and the console can start the new game. Most of the games require power cycle to play them correctly right after programming.
 
 
 **FAQ:**
@@ -97,19 +103,25 @@ A: because it can be accessed only over an 8 bit parallel bus with sequential ad
 
 --------
 
-Q: Why there are no gerbers available? I want to build this cart.
+Q: I want to build this cart. Can you provide gerber files?
 
-A: Wait until the design of the PCB Rev3 is verified. Or, if you are so keen to try, use the .pcb file from this repo, open it in
-   the free GEDA PCB application and export the gerbers yourself.
+A: PCB Rev3 is now verified, you can find gerbers in the 'gerbers' directory. Upload the zip file to the PCB manfacturing online service
+(mine used JLCPCB but others should cope with that zip file as well, if not let me know). The design has 4 layers, and their
+order (the website may ask you to specify this)  is 1) GTL, 2) GL2, 3) GL3, 4) GBL. Thickness of the board is 1.6mm.
 
 --------
 
 Q: How far is the WIP stage - what is still missing?
 
-A: I need to verify the PCB Rev3 is correct and can be built without bodge wires and PCB hacks. Then I need to prepare an API/Library for 
-   reading and writing the Slow RAM, and an API for storing the user data on the WiFi MCU flash storage. Then I would like to write some 
-   Genesis test programs to exercise the API/Libraries. Apart from that the basic functionality (flashing the cart over WiFi) is finished
-   and should work now.
-  
-   
+A: I have verified the PCB Rev3 is correct and functional, it and can be built without bodge wires and PCB hacks (see the prototype image). 
+I 'll need to prepare an API/Library for reading and writing the Slow RAM, and an API for storing the user data on
+the WiFi MCU flash storage. Then I would like to write some  Genesis test programs to exercise the API/Libraries. 
+Apart from that the basic functionality (flashing the cart over WiFi) is finished and should work now.
+
+--------
+
+Q: I would like to fit the PCB  cart into a plastic shell - which plastic shell can I use?
+
+A: You can use a 3d printed case that I used in the [previous genesis cart design](https://github.com/ole00/genesis_flash_cart_8mbit).
+The .stl files can be found in the 'case' directory. There is also some extra information at the bottom of the readme.md page.
    
