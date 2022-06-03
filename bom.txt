@@ -13,7 +13,8 @@ U5                   ,74HC595D              ,1     , 0.50   ,Nexperia 8-Bit Shif
 U9                   ,74HC08D               ,1     , 0.56   ,Nexperia Quad AND Gate ! Vih Typ less than  3V  at VCC 5V !!
 U8                   ,NCP163ASN330T1G       ,1     , 0.27   ,LDO 3.3V 250mA SOT-23 - alternatives MIC5317-3.3YM5-TR or NCP511SN33T1G or any compatible SOT23-5 LDO 3.3V at least 100mA 
 M1                   ,Lolin-S2-mini         ,1     , 5.40   ,Mini WiFi board based on ESP32-S2FN4R2. https://www.wemos.cc/en/latest/s2/s2_mini.html - check Aliexpress (search: lolin s2 mini)!
-
+D1 D2 D3             ,LY R976               ,3     , 0.06   ,SMT LED 0805 FV up to 2.5V, any Red Yellow or Green LED of that size should work
+U10                  ,ATF16B8B-15PU         ,1     , 1.30   ,Optional - Programmable Logic device DIP 20 - alternatives Lattice GAL16V8 - check Aliexpress.
 
 Total price of components approx. 14£  as of 2022/05
 
