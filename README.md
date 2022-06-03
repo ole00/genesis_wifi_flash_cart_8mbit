@@ -29,6 +29,10 @@ or you could build [Afterburner GAL chip programmer](https://github.com/ole00/af
 on a bread board. If that seems complicated you can add the GAL IC to the cart later, whenever
 it is convenient for you.
 
+If that sounds too complicated for you, check the basic megadrive cart [here](https://github.com/ole00/genesis_flash_cart_8mbit).
+That one uses through hole parts only, but the flash chips need to be programmed out-of-the-cart by an external
+eeprom programmer.
+
 **Costs**: Low, around 40-60$, most of the costs are actually shipment costs of the PCBs and components.
 To reduce costs team up with your friends to produce few of the carts and split the costs.
 
