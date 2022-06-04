@@ -110,8 +110,16 @@ A: because it can be accessed only over an 8 bit parallel bus with sequential ad
 Q: I want to build this cart. Can you provide gerber files?
 
 A: PCB Rev3 is now verified, you can find gerbers in the 'gerbers' directory. Upload the zip file to the PCB manfacturing online service
-(mine used JLCPCB but others should cope with that zip file as well, if not let me know). The design has 4 layers, and their
+(I used JLCPCB service, but other services should work OK with that zip file as well, if not let me know). The design has 4 coppe layers, and their
 order (the website may ask you to specify this)  is 1) GTL, 2) GL2, 3) GL3, 4) GBL. Thickness of the board is 1.6mm.
+
+--------
+
+Q: Isn't 4 layer board too expensive to produce? Could you simplify the desgin to use 2 layer PCB?
+
+A: Not really. These days (2022) you can get the 4 layer PCBs for less than $15 (without postage) and you get several PCBs for that price. I doubt
+the PCB can be simplified to 2 layer desgin, but maybe some PCB guru could do that. Try it yourself - the PCB design is free and open
+and can be edited in [Geda PCB CAD tool](http://pcb.geda-project.org) wich is also free and open source project.
 
 --------
 
