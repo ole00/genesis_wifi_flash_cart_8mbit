@@ -1,7 +1,6 @@
 /* Megadrive Wifi cart
- * !! WORK IN PROGRESS !!!
- * !! USB UPLOAD - install via bootloader only!!! 
- * !! Doo not use auto-reboot via serial, or else the FW is not burned properly!!!
+ *  
+ *  USB UPLOAD - Via bootloader!!! do not use auto-reboot via serial!!!
  */
 
 
@@ -173,17 +172,24 @@ uint32_t romPos = 0;
 
 static void setAddress(uint32_t address);
 
-volatile uint16_t  pinWeCount = 0;
-//volatile uint16_t  pinWeState = 0;
+//the total number of written bytes since the start of transaction
+volatile uint32_t  weCount = 0;
+
+//current index to isrRam
+volatile uint32_t  weAddr = 0;
+
+//total data length of the transaction
+volatile uint32_t  weLen = 0;
+
+// indicates the WE was asserted recently
 volatile bool  pinWeAsserted = false;
 
-volatile uint32_t  pinOeCount = 0;
-volatile bool  pinOeAsserted = false;
-
+// handle to the ISR  - used for masking the interrupts coming from the Console
 intr_handle_t intrHandle = 0;
 
-volatile uint8_t isrRead[4 * 1024];
-volatile uint8_t isrRam[64 * 1024];
+//The first 4 kbytes is a scratch area for receiving data
+//slow ram starts from offset of 4 kbytes
+volatile uint8_t isrRam[(4 + 64) * 1024];
 
 volatile int intCounter = 0;
 
@@ -271,7 +277,6 @@ static int chipErase(void) {
   uint8_t cnt = 0;
 
   //Serial.printf("Erasing chip\r\n");
-  //setDataBusDirection(OUTPUT);
   SET_DATA_DIR_OUT;
   delay(10);
   writeByte(0x5555, 0xAA);
@@ -282,7 +287,6 @@ static int chipErase(void) {
   writeByte(0x5555, 0x10);
 
   delay(5);
-  //setDataBusDirection(INPUT);
   SET_DATA_DIR_INP;
   delay(5);
   r = readByte(0);  
@@ -358,7 +362,6 @@ static int writeAddress(uint32_t addr, uint8_t* buf, uint16_t len) {
 
       //check for completion of the write operation
 
-      //setDataBusDirection(INPUT);
       SET_DATA_DIR_INP;
       // check top 7th bit
       r1 = v & 0b10000000; 
@@ -384,7 +387,6 @@ static int writeAddress(uint32_t addr, uint8_t* buf, uint16_t len) {
         return 1;
       }
       //Serial.printf("wait=%i\r\n", cnt);
-      //setDataBusDirection(OUTPUT);
       SET_DATA_DIR_OUT;
   }
   return 0;
@@ -395,7 +397,6 @@ static void readAddress(uint32_t addr, uint8_t* buf, uint16_t len) {
   uint32_t r;
 
   // ensure the pins and transceivers are set up for reading
-  //setDataBusDirection(INPUT);
   SET_DATA_DIR_INP;
   
   //ensure the address bottom 11 bits are 0 (ie. multiply of 2048)
@@ -694,41 +695,6 @@ static void handleWifi() {
     }
 }
 
-
-static void IRAM_ATTR gpioIsr(void* param) {
-    uint32_t gpio_intr_status_l = GPIO.status;
-    
-    GPIO.status_w1tc = gpio_intr_status_l;//Clear intr for gpio0-gpio31
-#ifdef ISR_TRACE
-    SET_IO_PA(1);
-#endif
-
-    if (gpio_intr_status_l & (M_WE)) {
-        // assume the data port is already set for input
-        uint32_t val = READ_IO_PB(0b111111110);
-        isrRead[pinWeCount & 0xFFF] = (val >> PIN_D0);
-        pinWeCount++;
-        pinWeAsserted = true;
-    } else {
-        if (pinOeCount == 0) {
-            SET_DATA_DIR_OUT;
-        }
-        pinOeAsserted = true;
-        WRITE_IO_PB(isrRam[pinOeCount] << PIN_D0);
-        pinOeCount++;
-        if (pinOeCount == 3) {
-            pinOeCount = 0;
-            SET_DATA_DIR_INP;
-            isrRam[1]++;
-        }
-    }
-#ifdef ISR_TRACE
-    CLR_IO_PA(1);
-#endif
-}
-
-
-
 static void setupPins(bool listenForIntr) {
     if (listenForIntr) {
         pinMode(PIN_WE, INPUT_PULLUP);
@@ -777,18 +743,16 @@ void setup() {
 
   pinMode(PIN_DDIR, OUTPUT);
 
-  //esp_intr_alloc(ETS_GPIO_INTR_SOURCE, ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_LEVEL3, gpioIsr, NULL,  &intrHandle);
+  //register the interrupt handler - required to detect WE and OE lines
+  //the ISR routine is written in highint5.S
   esp_intr_alloc(ETS_GPIO_INTR_SOURCE, ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_LEVEL5, NULL, NULL,  &intrHandle);
 
   setupPins(true);
  
-
   pinMode(0, OUTPUT);
   
   setDataBusDirection(INPUT);
   SET_IO_PA(1);
-  //SET_DATA_DIR_OUT;
-  
 
   SET_IO_PA(M_WE); // keep WE pin high (no write)
   SET_IO_PA(M_OE); // keep OE pin high (no read)
@@ -798,14 +762,13 @@ void setup() {
 
   isrRam[0] = 0x5E;
   isrRam[1] = 0x6A;
-  
+
 
   // Ensure USB CDC On Boot is Enabled (in Arduino IDE, Menu->Tools->Board_options list)  to view serial log on /dev/ttyACM0
   Serial.begin (115200);
 
   delay(1500);
   CLR_IO_PA(1);
-
 
   romBuf = (uint8_t*) malloc(MAX_ROM_SIZE);
   if (NULL == romBuf) {
@@ -857,7 +820,6 @@ static void setAddress(uint32_t address) {
 }
 
 static void releaseConsoleReset(int toggleTime) {
-    //setDataBusDirection(INPUT);
     SET_DATA_DIR_INP;
     // keep access to both chip disabled -> releases the console being in reset
     SET_IO_PA(M_CEU1); // keep CEU1 high (disabled)
@@ -1022,30 +984,26 @@ void loop() {
     }
     handleWifi();
     // Write from console, read by MCU
-    if (pinWeCount > 0) {
+    if (pinWeAsserted) {
         char t[256];
-        pinWeAsserted = false;
+        pinWeAsserted = false;       
         t[0] = 0;
-        if (isrRead[0] == 0x5A && isrRead[1] == 0xA5) {
-            if (isrRead[2] == 'T') {
-                sprintf((char*)t, "%s\r\n", isrRead + 3);
-            }           
+        if (isrRam[0] == 0x5E && isrRam[1] == 3) {
+            sprintf((char*)t, "%s\r\n", isrRam + 2);   
         }
 #ifdef ISR_TRACE
         else {
-            sprintf((char*)t, "WE intr: %i (0x%02x 0x%02x 0x%02x 0x%02x)\r\n", pinWeCount, isrRead[0], isrRead[1], isrRead[2], isrRead[3]);
+            sprintf((char*)t, "WE intr: %i (0x%02x 0x%02x 0x%02x 0x%02x)\r\n", weCount, isrRam[0], isrRam[1], isrRam[2], isrRam[3]);
         }
         Serial.printf(t);
-#endif        
-        pinWeCount = 0;
-        udp.beginPacket("192.168.4.2", 0x5E6A);
-        udp.write((const uint8_t *)t, strlen(t) + 1);
-        udp.endPacket();
+
+#endif
+        //send non-empty strings only
+        if (t[0]) {
+            udp.beginPacket("192.168.4.2", 0x5E6A);
+            udp.write((const uint8_t *)t, strlen(t) + 1);
+            udp.endPacket();
+        }
     }
-    if (pinOeAsserted) {
-        pinOeCount = 0;
-        pinOeAsserted = false;
-        SET_IO_PA(1);
-        CLR_IO_PA(1);
-    }
+   
 }
