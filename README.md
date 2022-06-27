@@ -125,10 +125,12 @@ and can be edited in [Geda PCB CAD tool](http://pcb.geda-project.org) wich is al
 
 Q: How far is the WIP stage - what is still missing?
 
-A: I have verified the PCB Rev3 is correct and functional, it and can be built without bodge wires and PCB hacks (see the prototype image). 
-I 'll need to prepare an API/Library for reading and writing the Slow RAM, and an API for storing the user data on
-the WiFi MCU flash storage. Then I would like to write some  Genesis test programs to exercise the API/Libraries. 
-Apart from that the basic functionality (flashing the cart over WiFi) is finished and should work now.
+A: I have verified the PCB Rev3 is correct and functional, it and can be built without bodge wires and PCB hacks (see the prototype image).
+I have implemented reading and writing from the slow memory (see mcw-memtest in the examples directory).
+I 'd like to add few functions for storing and reading application data to/from the WiFi MCU flash storage. 
+Then write a Genesis test programs to exercise the new code code. 
+The stored data will need some simple meanagement Web page accessible over HTTP server running on the cart.
+Apart from that the basic functionality (flashing the cart over WiFi, reading and writing the slow memory) is finished and should work now.
 
 --------
 
